@@ -292,7 +292,6 @@ async function connectToWebsocket() {
     try {
         await client.connect(config);
         isConnected = true;
-        await resumeAudioContext();
         connectButton.textContent = 'Disconnect';
         connectButton.classList.add('connected');
         messageInput.disabled = false;
@@ -301,6 +300,19 @@ async function connectToWebsocket() {
         cameraButton.disabled = false;
         screenButton.disabled = false;
         logMessage('Connected to Gemini 2.0 Flash Multimodal Live API', 'system');
+        
+        // Add click handler to initialize audio on first interaction
+        const initAudioHandler = async () => {
+            try {
+                await ensureAudioInitialized();
+                document.removeEventListener('click', initAudioHandler);
+            } catch (error) {
+                Logger.error('Audio initialization error:', error);
+            }
+        };
+        document.addEventListener('click', initAudioHandler);
+        logMessage('Audio initialized', 'system');
+ 
     } catch (error) {
         logMessage(`Connection error: ${error.message}`, 'system');
         isConnected = false;
@@ -327,7 +339,6 @@ async function connectToWebsocket() {
 
     client.on('audio', async (data) => {
         try {
-            await resumeAudioContext();
             const streamer = await ensureAudioInitialized();
             streamer.addPCM16(new Uint8Array(data));
         } catch (error) {
