@@ -602,6 +602,7 @@ async function ensureAudioInitialized() {
         audioStreamer = new AudioStreamer(audioCtx);
         // Set the sample rate before initializing the worklet
         audioStreamer.sampleRate = CONFIG.AUDIO.OUTPUT_SAMPLE_RATE;
+        await audioStreamer.initialize(); // Initialize the audio streamer
         await audioStreamer.addWorklet('vumeter-out', 'js/audio/worklets/vol-meter.js', (ev) => {
             updateAudioVisualizer(ev.data.volume);
         });
