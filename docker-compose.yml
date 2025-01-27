@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  gemini-client:
+    build: .
+    container_name: gemini-client
+    ports:
+      - "8443:443"
+    volumes:
+      - ssl-certs:/etc/nginx/ssl
+    restart: unless-stopped
+
+volumes:
+  ssl-certs:
+    driver: local 
